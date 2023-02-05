@@ -24,4 +24,4 @@ jobs:
           server: canseideserdev.online
           username: canseideserdev
           password: ${{ secrets.FTP_PASSWORD }}
-          server-dir: sit-rpg.canseideserdev.online
+          server-dir: sit-rpg.canseideserdev.online/
