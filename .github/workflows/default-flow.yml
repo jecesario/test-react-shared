@@ -21,6 +21,7 @@ jobs:
     name: 🚀 Deploy DEV
     needs: build
     runs-on: ubuntu-latest
+    environment: dev
     steps:
       - name: 🚚 Get latest code
         uses: actions/checkout@v3
@@ -38,8 +39,62 @@ jobs:
       - name: 📂 Sync files
         uses: SamKirkland/FTP-Deploy-Action@4.3.3
         with:
-          server: canseideserdev.online
-          username: canseideserdev
+          server: ${{ secrets.FTP_HOST }}
+          username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           local-dir: build/
-          server-dir: sit-rpg.canseideserdev.online/
+          server-dir: dev-rpg.canseideserdev.online/
+  deploy-uat:
+    name: 🚀 Deploy UAT
+    needs: deploy-dev
+    runs-on: ubuntu-latest
+    environment: uat
+    steps:
+      - name: 🚚 Get latest code
+        uses: actions/checkout@v3
+
+      - name: Use Node.js 16
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+
+      - name: 🔨 Build Project
+        run: |
+          npm install
+          npm run build
+
+      - name: 📂 Sync files
+        uses: SamKirkland/FTP-Deploy-Action@4.3.3
+        with:
+          server: ${{ secrets.FTP_HOST }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: build/
+          server-dir: uat-rpg.canseideserdev.online/
+  deploy-prod:
+    name: 🚀 Deploy PROD
+    needs: deploy-uat
+    runs-on: ubuntu-latest
+    environment: prod
+    steps:
+      - name: 🚚 Get latest code
+        uses: actions/checkout@v3
+
+      - name: Use Node.js 16
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+
+      - name: 🔨 Build Project
+        run: |
+          npm install
+          npm run build
+
+      - name: 📂 Sync files
+        uses: SamKirkland/FTP-Deploy-Action@4.3.3
+        with:
+          server: ${{ secrets.FTP_HOST }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: build/
+          server-dir: prod-rpg.canseideserdev.online/
